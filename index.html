@@ -6,15 +6,22 @@
 <style>
 
 body{
-font-family:Arial;
+font-family:Arial, sans-serif;
 padding:20px;
 }
 
-/* PRINT SIZE */
+/* PRINT SETTINGS */
 
 @page{
 size:100mm 50mm;
 margin:0;
+}
+
+html, body{
+width:100mm;
+height:50mm;
+margin:0;
+padding:0;
 }
 
 /* LABEL */
@@ -25,9 +32,10 @@ height:50mm;
 border:2px solid #1a3f7a;
 border-radius:8px;
 padding:4mm;
-position:relative;
 box-sizing:border-box;
+position:relative;
 overflow:hidden;
+background:white;
 }
 
 /* WATERMARK */
@@ -37,7 +45,7 @@ position:absolute;
 top:50%;
 left:50%;
 transform:translate(-50%,-50%);
-font-size:18mm;
+font-size:16mm;
 color:#1a73c9;
 opacity:0.05;
 font-weight:bold;
@@ -45,7 +53,7 @@ white-space:nowrap;
 pointer-events:none;
 }
 
-/* TOP RIGHT ARROW */
+/* ARROW TOP RIGHT */
 
 .arrowbox{
 position:absolute;
@@ -56,12 +64,13 @@ text-align:center;
 
 .arrow{
 font-size:7mm;
-line-height:6mm;
+line-height:7mm;
 }
 
 .thisside{
 font-size:2.5mm;
 font-weight:bold;
+margin-top:1mm;
 }
 
 /* TEXT */
@@ -106,20 +115,6 @@ padding:6px 12px;
 cursor:pointer;
 }
 
-/* PRINT SETTINGS */
-
-@page{
-size:100mm 50mm;
-margin:0;
-}
-
-html, body{
-width:100mm;
-height:50mm;
-margin:0;
-padding:0;
-}
-
 /* PRINT MODE */
 
 @media print{
@@ -136,8 +131,6 @@ visibility:visible;
 position:absolute;
 left:0;
 top:0;
-width:100mm;
-height:50mm;
 }
 
 button,input,h2{
@@ -145,7 +138,15 @@ display:none;
 }
 
 }
-<!-- INPUT SECTION -->
+
+</style>
+</head>
+
+<body>
+
+<h2>Logistics Label Generator</h2>
+
+<!-- INPUT FORM -->
 
 <div>
 
@@ -161,6 +162,11 @@ display:none;
 
 <input id="from" placeholder="FROM">
 <input id="to" placeholder="TO"><br>
+
+<!-- CHECKBOXES -->
+<label><input type="checkbox" id="train"> Train</label>
+<label><input type="checkbox" id="air"> Air</label>
+<label><input type="checkbox" id="road"> Road</label><br>
 
 <button onclick="generate()">Generate Label</button>
 
@@ -199,7 +205,9 @@ display:none;
 <div class="field">PKG: <span id="pkg_val"></span></div>
 
 <div class="transport">
-☐ Train ☐ Air ☐ Road
+<span id="train_val">☐ Train</span>
+<span id="air_val"> ☐ Air</span>
+<span id="road_val"> ☐ Road</span>
 </div>
 
 </div>
@@ -224,6 +232,17 @@ document.getElementById("inv_val").innerText=document.getElementById("inv").valu
 document.getElementById("from_val").innerText=document.getElementById("from").value
 document.getElementById("to_val").innerText=document.getElementById("to").value
 document.getElementById("pkg_val").innerText=document.getElementById("pkg").value
+
+// Checkbox values
+
+document.getElementById("train_val").innerText =
+document.getElementById("train").checked ? "☑ Train" : "☐ Train";
+
+document.getElementById("air_val").innerText =
+document.getElementById("air").checked ? "☑ Air" : "☐ Air";
+
+document.getElementById("road_val").innerText =
+document.getElementById("road").checked ? "☑ Road" : "☐ Road";
 
 }
 
