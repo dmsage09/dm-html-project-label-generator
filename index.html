@@ -1,251 +1,230 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Logistics Label Generator</title>
+<meta charset="UTF-8">
+<title>Label Generator</title>
 
 <style>
-
 body{
-font-family:Arial, sans-serif;
-padding:20px;
-}
-
-/* PRINT SETTINGS */
-
-@page{
-size:100mm 50mm;
-margin:0;
-}
-
-html, body{
-width:100mm;
-height:50mm;
-margin:0;
-padding:0;
-}
-
-/* LABEL */
-
-.container{
-width:100mm;
-height:50mm;
-border:2px solid #1a3f7a;
-border-radius:8px;
-padding:4mm;
-box-sizing:border-box;
-position:relative;
-overflow:hidden;
-background:white;
-}
-
-/* WATERMARK */
-
-.watermark{
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-font-size:16mm;
-color:#1a73c9;
-opacity:0.05;
-font-weight:bold;
-white-space:nowrap;
-pointer-events:none;
-}
-
-/* ARROW TOP RIGHT */
-
-.arrowbox{
-position:absolute;
-top:3mm;
-right:3mm;
-text-align:center;
-}
-
-.arrow{
-font-size:7mm;
-line-height:7mm;
-}
-
-.thisside{
-font-size:2.5mm;
-font-weight:bold;
-margin-top:1mm;
-}
-
-/* TEXT */
-
-.company-title{
-font-size:4mm;
-font-weight:bold;
-}
-
-.awb{
-font-size:5mm;
-font-weight:bold;
-margin-top:2mm;
-margin-bottom:1mm;
-}
-
-.field{
-font-size:3mm;
-font-weight:bold;
-}
-
-.row{
-display:flex;
-justify-content:space-between;
-}
-
-.transport{
-font-size:3mm;
-margin-top:3mm;
+    font-family: Arial, sans-serif;
+    text-align:center;
 }
 
 /* INPUT */
-
 input{
-padding:4px;
-margin:3px;
+    margin:5px;
+    padding:5px;
 }
 
-button{
-margin-top:10px;
-padding:6px 12px;
-cursor:pointer;
+/* LABEL */
+.label{
+    width:100mm;
+    height:50mm;
+    border:2px solid #000;
+    border-radius:10px;
+    margin:auto;
+    padding:6px;
+    box-sizing:border-box;
+    position:relative;
+    overflow:hidden;
 }
 
-/* PRINT MODE */
+/* WATERMARK */
+.watermark{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    font-size:38px;
+    color:#000;
+    opacity:0.06;
+    white-space:nowrap;
+    pointer-events:none;
+}
+
+/* HEADER */
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.company-block{
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+/* LOGO */
+.logo{
+    height:30px;
+    object-fit:contain;
+}
+
+/* COMPANY NAME */
+.company-name{
+    font-size:13px;
+    font-weight:bold;
+}
+
+/* LINE */
+.divider{
+    border:none;
+    border-top:1px solid black;
+    margin:2px 0;
+}
+
+/* AWB */
+.awb{
+    font-size:15px;
+    font-weight:bold;
+}
+
+/* ROW */
+.row{
+    display:flex;
+    justify-content:space-between;
+    font-size:11px;
+}
+
+/* BLOCKS */
+.left, .right{
+    width:48%;
+    text-align:left;
+}
+
+/* ARROW */
+.arrow-box{
+    position:absolute;
+    top:5px;
+    right:8px;
+    text-align:center;
+    font-size:9px;
+}
+
+.arrow{
+    font-size:16px;
+    display:block;
+    margin-bottom:2px;
+}
+
+/* CHECKBOX */
+.checkbox{
+    margin-top:3px;
+}
+
+/* PRINT SETTINGS */
+@page{
+    size:100mm 50mm;
+    margin:0;
+}
 
 @media print{
 
-body *{
-visibility:hidden;
-}
-
-.container, .container *{
-visibility:visible;
-}
-
-.container{
-position:absolute;
-left:0;
-top:0;
+body{
+    margin:0;
 }
 
 button,input,h2{
-display:none;
+    display:none;
+}
+
+.label{
+    page-break-after:avoid;
 }
 
 }
-
 </style>
+
+<script>
+function updateLabel(){
+    let company = document.getElementById("company").value;
+    document.getElementById("companyText").innerText = company;
+    document.getElementById("watermark").innerText = company;
+}
+</script>
+
 </head>
 
 <body>
 
 <h2>Logistics Label Generator</h2>
 
-<!-- INPUT FORM -->
-
-<div>
-
-<input id="company" placeholder="Company Name"><br>
-
+<input id="company" placeholder="Company Name" oninput="updateLabel()">
 <input id="awb" placeholder="AWB">
-<input id="pkg" placeholder="PKG"><br>
-
-<input id="party" placeholder="Party Name"><br>
-
+<input id="party" placeholder="Party">
 <input id="po" placeholder="PO">
-<input id="inv" placeholder="INV"><br>
+<input id="inv" placeholder="INV">
+<input id="from" placeholder="From">
+<input id="to" placeholder="To">
+<input id="pkg" placeholder="PKG">
 
-<input id="from" placeholder="FROM">
-<input id="to" placeholder="TO"><br>
-
-<!-- CHECKBOXES -->
-<label><input type="checkbox" id="train"> Train</label>
-<label><input type="checkbox" id="air"> Air</label>
-<label><input type="checkbox" id="road"> Road</label><br>
-
-<button onclick="generate()">Generate Label</button>
-
-</div>
-
-<br>
-
-<!-- LABEL -->
-
-<div class="container">
-
-<div class="watermark" id="watermark">COMPANY</div>
-
-<div class="arrowbox">
-<div class="arrow">↑</div>
-<div class="thisside">THIS SIDE UP</div>
-</div>
-
-<div class="company-title" id="company_title">COMPANY</div>
-
-<div class="awb">AWB: <span id="awb_val"></span></div>
-
-<div class="field">PARTY: <span id="party_val"></span></div>
-
-<div class="row">
-<div class="field">PO: <span id="po_val"></span></div>
-<div class="field">INV: <span id="inv_val"></span></div>
-</div>
-
-<div class="row">
-<div class="field">FROM: <span id="from_val"></span></div>
-<div class="field">TO: <span id="to_val"></span></div>
-</div>
-
-<div class="row">
-<div class="field">PKG: <span id="pkg_val"></span></div>
-
-<div class="transport">
-<span id="train_val">☐ Train</span>
-<span id="air_val"> ☐ Air</span>
-<span id="road_val"> ☐ Road</span>
-</div>
-
-</div>
-
-</div>
-
+<br><br>
 <button onclick="window.print()">Print Label</button>
 
+<br><br>
+
+<div class="label">
+
+    <!-- WATERMARK -->
+    <div class="watermark" id="watermark">COMPANY</div>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="company-block">
+            <img src="logo.jpg" class="logo">
+            <div class="company-name" id="companyText">COMPANY</div>
+        </div>
+    </div>
+
+    <!-- ARROW -->
+    <div class="arrow-box">
+        <span class="arrow">⬆</span>
+        THIS SIDE UP
+    </div>
+
+    <hr class="divider">
+
+    <!-- AWB -->
+    <div class="awb">
+        AWB: <span id="awbText"></span>
+    </div>
+
+    <hr class="divider">
+
+    <!-- DETAILS -->
+    <div class="row">
+
+        <div class="left">
+            PARTY: <span id="partyText"></span><br>
+            PO: <span id="poText"></span><br>
+            FROM: <span id="fromText"></span><br>
+            PKG: <span id="pkgText"></span>
+        </div>
+
+        <div class="right">
+            INV: <span id="invText"></span><br>
+            TO: <span id="toText"></span><br>
+
+            <div class="checkbox">
+                <label><input type="checkbox"> Train</label>
+                <label><input type="checkbox"> Air</label>
+                <label><input type="checkbox"> Road</label>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
 <script>
+const fields = ["awb","party","po","inv","from","to","pkg"];
 
-function generate(){
-
-let company=document.getElementById("company").value
-
-document.getElementById("company_title").innerText=company
-document.getElementById("watermark").innerText=company
-
-document.getElementById("awb_val").innerText=document.getElementById("awb").value
-document.getElementById("party_val").innerText=document.getElementById("party").value
-document.getElementById("po_val").innerText=document.getElementById("po").value
-document.getElementById("inv_val").innerText=document.getElementById("inv").value
-document.getElementById("from_val").innerText=document.getElementById("from").value
-document.getElementById("to_val").innerText=document.getElementById("to").value
-document.getElementById("pkg_val").innerText=document.getElementById("pkg").value
-
-// Checkbox values
-
-document.getElementById("train_val").innerText =
-document.getElementById("train").checked ? "☑ Train" : "☐ Train";
-
-document.getElementById("air_val").innerText =
-document.getElementById("air").checked ? "☑ Air" : "☐ Air";
-
-document.getElementById("road_val").innerText =
-document.getElementById("road").checked ? "☑ Road" : "☐ Road";
-
-}
-
+fields.forEach(id=>{
+    document.getElementById(id).addEventListener("input",()=>{
+        document.getElementById(id+"Text").innerText = document.getElementById(id).value;
+    });
+});
 </script>
 
 </body>
