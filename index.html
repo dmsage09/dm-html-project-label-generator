@@ -10,23 +10,30 @@ body{
     text-align:center;
 }
 
-/* INPUT AREA */
+/* INPUT */
 input{
     margin:5px;
     padding:5px;
 }
 
-/* LABEL SIZE FIXED */
+/* PRINT AREA */
+#printArea{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+/* LABEL */
 .label{
     width:100mm;
     height:50mm;
     border:2px solid #1e3a8a;
     border-radius:10px;
-    margin:auto;
-    padding:8px;
+    padding:6px;
     position:relative;
     box-sizing:border-box;
     overflow:hidden;
+    margin-bottom:5mm; /* spacing for screen only */
 }
 
 /* WATERMARK */
@@ -38,7 +45,6 @@ input{
     font-size:40px;
     color:#1e3a8a;
     opacity:0.08;
-    white-space:nowrap;
     pointer-events:none;
 }
 
@@ -49,11 +55,10 @@ input{
     align-items:center;
 }
 
-/* AWB BIG */
+/* AWB */
 .awb{
     font-size:16px;
     font-weight:bold;
-    margin-top:3px;
 }
 
 /* ROW */
@@ -63,12 +68,13 @@ input{
     font-size:11px;
 }
 
-/* LEFT & RIGHT */
+/* SIDES */
 .left, .right{
     width:48%;
+    text-align:left;
 }
 
-/* THIS SIDE UP */
+/* ARROW */
 .arrow-box{
     position:absolute;
     top:5px;
@@ -79,17 +85,14 @@ input{
 
 .arrow{
     font-size:18px;
-    display:block;
-    margin-bottom:2px;
 }
 
 /* CHECKBOX */
 .checkbox{
     margin-top:3px;
-    font-size:11px;
 }
 
-/* PRINT SETTINGS */
+/* 🔥 PRINT SETTINGS (MOST IMPORTANT) */
 @page{
     size:100mm 50mm;
     margin:0;
@@ -101,14 +104,31 @@ body{
     margin:0;
 }
 
-button,input,h2{
+/* Hide inputs */
+button, input, h2, #copyBtn, #count{
     display:none;
 }
 
-.label{
-    page-break-after:avoid;
+/* Remove spacing */
+#printArea{
+    display:block;
 }
 
+/* EACH LABEL = EXACT PAGE */
+.label{
+    width:100mm;
+    height:50mm;
+    margin:0;
+    border:2px solid #000;
+    page-break-after:always;
+    page-break-inside:avoid;
+    break-after:page;
+}
+
+/* LAST LABEL FIX */
+.label:last-child{
+    page-break-after:auto;
+}
 }
 </style>
 
@@ -117,6 +137,29 @@ function updateLabel(){
     let company = document.getElementById("company").value;
     document.getElementById("companyText").innerText = company;
     document.getElementById("watermark").innerText = company;
+}
+
+const fields = ["awb","party","po","inv","from","to","pkg"];
+
+window.onload = function(){
+    fields.forEach(id=>{
+        document.getElementById(id).addEventListener("input",()=>{
+            document.getElementById(id+"Text").innerText = document.getElementById(id).value;
+        });
+    });
+}
+
+/* 🔥 BULK PRINT FUNCTION */
+function generateCopies(){
+    let count = document.getElementById("count").value || 1;
+    let original = document.getElementById("singleLabel").outerHTML;
+    let container = document.getElementById("printArea");
+
+    container.innerHTML = "";
+
+    for(let i=0; i<count; i++){
+        container.innerHTML += original;
+    }
 }
 </script>
 
@@ -136,34 +179,37 @@ function updateLabel(){
 <input id="pkg" placeholder="PKG">
 
 <br><br>
-<button onclick="window.print()">Print Label</button>
+
+<input id="count" type="number" placeholder="No. of Labels (e.g. 50)">
+<button id="copyBtn" onclick="generateCopies()">Generate Bulk</button>
 
 <br><br>
 
-<div class="label">
+<button onclick="window.print()">Print</button>
 
-    <!-- WATERMARK -->
+<br><br>
+
+<!-- PRINT AREA -->
+<div id="printArea">
+
+<!-- SINGLE LABEL TEMPLATE -->
+<div class="label" id="singleLabel">
+
     <div class="watermark" id="watermark">COMPANY</div>
 
-    <!-- HEADER -->
     <div class="header">
-        <div>
-            <div id="companyText">COMPANY</div>
-        </div>
+        <div id="companyText">COMPANY</div>
     </div>
 
-    <!-- THIS SIDE UP -->
     <div class="arrow-box">
         <span class="arrow">⬆</span>
         THIS SIDE UP
     </div>
 
-    <!-- AWB -->
     <div class="awb">
         AWB: <span id="awbText"></span>
     </div>
 
-    <!-- DETAILS -->
     <div class="row">
         <div class="left">
             PARTY: <span id="partyText"></span><br>
@@ -186,15 +232,7 @@ function updateLabel(){
 
 </div>
 
-<script>
-const fields = ["awb","party","po","inv","from","to","pkg"];
-
-fields.forEach(id=>{
-    document.getElementById(id).addEventListener("input",()=>{
-        document.getElementById(id+"Text").innerText = document.getElementById(id).value;
-    });
-});
-</script>
+</div>
 
 </body>
 </html>
